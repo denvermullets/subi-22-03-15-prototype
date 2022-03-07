@@ -1,4 +1,5 @@
 extends Area2D
+signal hit
 
 # export lets us use this variable in the godot scene panel
 # going to try to use types as often as i can
@@ -7,6 +8,7 @@ var screen_size: Vector2
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+  # hide()
   screen_size = get_viewport_rect().size
 
 func _process(delta: float) -> void:
@@ -41,7 +43,15 @@ func _process(delta: float) -> void:
   if velocity.y < 0:
     $PlayerWalk.animation = "walk_up"
 
+# *** signal functions are not currently auto created due to using VS Code ***
+func _on_Player_body_entered(_body: Node) -> void:
+  # player will hide when hit
+  hide()
+  emit_signal("hit")
+  # set deferred tell godot to wait until it's safe to disable shape to avoid error
+  $CollisionShape2D.set_deferred("disabled", true)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta: float) -> void:
-#	pass
+func start(pos: Vector2) -> void:
+  position = pos
+  show()
+  $CollisionShape2D.disabled = false
